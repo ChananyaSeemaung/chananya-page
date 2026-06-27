@@ -1,0 +1,45 @@
+Google Sheets + Google Apps Script for GPS check-in
+
+1. สร้าง Google Sheet ใหม่
+   - ตั้งชื่อคอลัมน์ เช่น: name, latitude, longitude, timestamp
+
+2. เปิดเมนู Extensions > Apps Script
+
+3. วางโค้ดนี้ลงในไฟล์ Code.gs:
+
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const data = JSON.parse(e.postData.contents);
+    sheet.appendRow([
+      new Date(),
+      data.name || '',
+      data.latitude || '',
+      data.longitude || '',
+      data.timestamp || ''
+    ]);
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'success' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'error', message: error.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+4. บันทึกโค้ด แล้วเลือก Deploy > New deployment
+   - เลือก Deployment type: Web app
+   - Execute as: Me
+   - Who has access: Anyone
+
+5. คัดลอก URL ของ Web app
+   - จะได้ URL แบบ https://script.google.com/macros/s/....../exec
+
+6. ใส่ URL นี้ลงในตัวแปร GOOGLE_SHEETS_URL ในไฟล์ index.html
+
+7. เปิดหน้าเว็บ และกดปุ่มเช็คชื่อ
+
+หมายเหตุ:
+- ถ้าเปิดไฟล์จาก file:// อาจมีปัญหา CORS ให้ลองโฮสต์ผ่าน GitHub Pages หรือเว็บเซิร์ฟเวอร์เล็กๆ
+- สามารถแก้ "name" ให้เป็นชื่อจริงจากผู้ใช้ได้โดยเพิ่ม input ในหน้าเว็บ

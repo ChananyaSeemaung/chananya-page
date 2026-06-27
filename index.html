@@ -1,9 +1,174 @@
-<html>
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio | Chananya Seemaung</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
+  <header>
+    <div class="hero">
+      <h1>Chananya Seemaung</h1>
+      <p>นักพัฒนาเว็บ / ผู้สร้างสรรค์ผลงานออนไลน์</p>
+      <img src="https://i.pinimg.com/736x/28/77/c9/2877c9a6e74bccfa81b622ed46b34665.jpg" alt="Portrait of Chananya">
+    </div>
+  </header>
 
-<h1>Chananya Seemaung</h1>
-<img src="https://i.pinimg.com/736x/28/77/c9/2877c9a6e74bccfa81b622ed46b34665.jpg" >
-<p>สวยเกินอ่ะ</p>
+  <div class="container">
+    <section class="section">
+      <h2>เกี่ยวกับฉัน</h2>
+      <p>สวัสดีครับ ฉันชื่อ ชนันท์ญา  สีม่วง เป็นนักพัฒนาเว็บที่ชื่นชอบการสร้างหน้าเว็บสวยงาม ใช้งานง่าย และเน้นการออกแบบที่ตอบโจทย์ผู้ใช้งาน พร้อมเรียนรู้เทคโนโลยีใหม่ๆ อย่างต่อเนื่อง</p>
+    </section>
 
+    <section class="section">
+      <h2>ทักษะ</h2>
+      <ul class="skills-list">
+        <li>HTML / CSS / JavaScript</li>
+        <li>Responsive Design</li>
+        <li>การพัฒนาเว็บพื้นฐาน</li>
+        <li>ออกแบบ UI / UX เบื้องต้น</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>ผลงานเด่น</h2>
+      <ul class="project-list">
+        <li>
+          <strong>Portfolio Page</strong> - ออกแบบและพัฒนาเว็บไซต์ส่วนตัวสำหรับแสดงผลงานและข้อมูลส่วนตัว
+        </li>
+        <li>
+          <strong>หน้าเว็บแบบ Responsive</strong> - สร้างเว็บไซต์ที่ดูดีทั้งบนคอมพิวเตอร์และมือถือ
+        </li>
+        <li>
+          <strong>โปรเจคการเรียนรู้เว็บ</strong> - ทดลองสร้างหน้าเว็บด้วย HTML/CSS, ปรับแต่งรูปภาพ และจัดวางเนื้อหาให้สวยงาม
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" id="attendance-section">
+      <h2>ระบบเช็คชื่อด้วย GPS</h2>
+      <p>กดปุ่มด้านล่างเพื่อขอพิกัดจากมือถือหรือเบราว์เซอร์ แล้วแสดงผลสถานะการเช็คชื่อ</p>
+      <div class="attendance-card">
+        <button id="checkinBtn" type="button">เช็คชื่อด้วย GPS</button>
+        <div class="attendance-info">
+          <p id="attendanceStatus">สถานะ: ยังไม่ได้เช็คชื่อ</p>
+          <p id="coords">พิกัด: -</p>
+          <p id="time">เวลา: -</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>ติดต่อ</h2>
+      <p>สนใจร่วมงานหรือสอบถามเพิ่มเติมได้ที่</p>
+      <p><strong>Email:</strong> chananya@example.com</p>
+      <p><strong>Line:</strong> @chananya</p>
+      <p><a href="index.html">กลับสู่หน้าแรก</a></p>
+    </section>
+  </div>
+
+  <script>
+    const GOOGLE_SHEETS_URL = 'REPLACE_WITH_YOUR_SCRIPT_URL';
+    const checkinBtn = document.getElementById('checkinBtn');
+    const statusEl = document.getElementById('attendanceStatus');
+    const coordsEl = document.getElementById('coords');
+    const timeEl = document.getElementById('time');
+
+    function formatTime(date) {
+      return date.toLocaleString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+
+    function sendToSheets(data) {
+      if (GOOGLE_SHEETS_URL === 'REPLACE_WITH_YOUR_SCRIPT_URL') {
+        console.warn('ยังไม่ได้ตั้งค่า URL ของ Google Apps Script');
+        updateStatus('เช็คชื่อสำเร็จ แต่ยังไม่ได้ตั้งค่า Google Sheets URL');
+        return;
+      }
+      updateStatus('กำลังส่งข้อมูลไป Google Sheets...');
+      fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.status === 'success') {
+          updateStatus('เช็คชื่อสำเร็จและบันทึกลง Google Sheets แล้ว');
+        } else {
+          throw new Error(result.message || 'ไม่สามารถบันทึกได้');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        updateStatus('เช็คชื่อสำเร็จ แต่ส่งข้อมูล Google Sheets ไม่สำเร็จ');
+      });
+    }
+
+    function updateStatus(message) {
+      statusEl.textContent = `สถานะ: ${message}`;
+    }
+
+    function handlePosition(position) {
+      const { latitude, longitude } = position.coords;
+      const timestamp = new Date();
+      coordsEl.textContent = `พิกัด: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+      timeEl.textContent = `เวลา: ${formatTime(timestamp)}`;
+      updateStatus('เช็คชื่อสำเร็จ');
+
+      const payload = {
+        name: 'ชื่อผู้ใช้',
+        latitude,
+        longitude,
+        timestamp: timestamp.toISOString(),
+      };
+      sendToSheets(payload);
+    }
+
+    function handleError(error) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          updateStatus('ปฏิเสธการอนุญาตตำแหน่ง');
+          break;
+        case error.POSITION_UNAVAILABLE:
+          updateStatus('ไม่สามารถหาตำแหน่งได้');
+          break;
+        case error.TIMEOUT:
+          updateStatus('หมดเวลาในการขอพิกัด');
+          break;
+        default:
+          updateStatus('เกิดข้อผิดพลาดในการขอพิกัด');
+      }
+      coordsEl.textContent = 'พิกัด: -';
+      timeEl.textContent = 'เวลา: -';
+    }
+
+    checkinBtn.addEventListener('click', () => {
+      if (!navigator.geolocation) {
+        updateStatus('เบราว์เซอร์ไม่รองรับ Geolocation');
+        return;
+      }
+      updateStatus('กำลังขอพิกัด...');
+      navigator.geolocation.getCurrentPosition(handlePosition, handleError, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      });
+    });
+  </script>
+
+  <footer>
+    <p>Portfolio โดย Chananya Seemaung</p>
+  </footer>
 </body>
 </html>
